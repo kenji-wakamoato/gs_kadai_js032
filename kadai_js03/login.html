@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ログイン画面</title>
+</head>
+<body>
+    <div>
+        <!-- 送信ボタン -->
+        <a href="#" id="admin" class="btn">管理者</a>
+        <a href="#" id="user" class="btn">ユーザー</a>
+    </div>
+    
+ <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+   
+<script >
+    // 管理者ボタンをクリックされたら次の処理をする
+    // 管理者をクリックされた時、セッションストレージデータを置く
+    $("#admin").on("click", function () {
+    // 管理者はtrueですよ。htmlに飛んでね
+        sessionStorage.setItem('admin', true);
+        window.location.href = './index.html';
+    });
+    // ユーザーは、falseですよ。htmlに飛んでね
+    $("#user").on("click", function () {
+        sessionStorage.setItem('admin', false);
+        window.location.href = './index.html';
+    });
+
+</script>
+</body>
+</html>

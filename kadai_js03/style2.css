@@ -1,0 +1,35 @@
+.tittle{
+    padding-top: 5%;
+    padding-left: 36%;
+}
+.inputarea{
+    display: none;
+}
+.textbox{
+    display: flex;
+    padding-top: 10%;
+    padding-left: 20%;
+}
+
+
+.sendbutton{
+    display: flex;
+    padding-left: 80%;
+    
+}
+.outputbox{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 20%;
+    padding-right: 20%;
+    
+}
+#output{
+    background: whitesmoke;/*背景色*/
+    border-left: double 7px #4ec4d3;/*左線*/
+    border-right: double 7px #4ec4d3;/*右線*/
+}
+#text{
+    border: double 5px #4ec4d3;
+}

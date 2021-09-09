@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="style2.css">
+  <title>プッシュ通知アプリ</title>
+</head>
+
+<body>
+  <!-- コンテンツ表示画面 -->
+  <h1 class="tittle">プッシュ通知入力画面</h1>
+  <div class="logout">
+    <!-- ログアウトボタン -->
+    <a href="#" id="logout" class="btn">ログアウト</a>
+  </div>
+  <div>
+    <!-- 名前 -->
+     
+    
+    <!-- <input type="text" id="username">  -->
+  </div>
+<div class="inputarea">
+  <div class="textbox">
+    <!-- テキストエリア -->
+    記事URL
+    <textarea name="" id="text" cols="100" rows="5"></textarea>
+  </div>
+
+  <div class="sendbutton">
+    <!-- 送信ボタン -->
+    <button id="send">送信</button>
+  </div>
+
+  <div class="outputbox">
+    <!-- 保存されたデータが表示される箇所 -->
+    <div id="output"></div>
+  </div>　　　　
+</div>
+
+
+  <!--/ コンテンツ表示画面 -->
+
+  <!-- JQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <!-- JQuery -->
+ <!--push.js  -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.8/push.min.js" integrity="sha512-eiqtDDb4GUVCSqOSOTz/s/eiU4B31GrdSb17aPAA4Lv/Cjc8o+hnDvuNkgXhSI5yHuDvYkuojMaQmrB5JB31XQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  </script>
+<!--push.js  -->
+
+  <!--** 以下Firebase **-->
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <!-- 6.6.1に該当する箇所はfirebaseのバージョンですので更新されるたびに随時変わります🤗 -->
+  <script src="https://www.gstatic.com/firebasejs/6.6.1/firebase.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#config-web-app -->
+
+  <script>
+    // セッションストレージからデータを取る
+    let admin = sessionStorage.getItem("admin");
+    // セッションストレージからデータを取れなかった時
+    if (admin==null)
+      window.location.href = "./login.html";
+
+    if (admin=="true")
+      $(".inputarea").show();  
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyB4oGYKVdKGs6gFwTd57_C9I4CJtSM9w74",
+      authDomain: "dev21chat-bebd5.firebaseapp.com",
+      databaseURL: "https://dev21chat-bebd5-default-rtdb.firebaseio.com/",
+      projectId: "dev21chat-bebd5",
+      storageBucket: "dev21chat-bebd5.appspot.com",
+      messagingSenderId: "60688665262",
+      appId: "1:60688665262:web:31734c6bbe735380727b3f"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    //firebaseのデーターベース（保存させる場所）を使いますよ
+    // 貼り付ける箇所ここです！！！
+    const newPostRef = firebase.database().ref();
+    
+    
+
+    // ここから下にjqueryの処理を書いて練習します
+
+    // 送信ボタンをクリックされたら次の処理をする
+    $("#send").on("click", function () {
+      
+
+      // const newPostref = {
+      //   username: 'ssss', //inputに入力された文字が入る
+      //   text: 'aaaaa', // textareaに入力された文字列が入る
+      // }
+
+      // データを登録で送る
+      newPostRef.push({
+        // username: $("#username").val(), //名前
+        text: $("#text").val(), //テキストエリア
+      })
+      $("#text").val(""); //空にする
+      // 追加で記述
+      // $('#username').val("") //空にする
+
+    });
+    // ログアウトのボタンをクリックした時の処理
+    $("#logout").on("click", function () {
+      sessionStorage.removeItem('admin');
+      location.reload();
+    });
+    // 受信処理
+    newPostRef.on("child_added", function (data) {
+      let v = data.val(); //ここに保存されたデータが全て入ってくる
+      let k = data.key; //今回は使いません
+      console.log(k, 'keyのこと！！！')
+      console.log(v, 'dddd'); //vの変数に入っているオブジェクトを全てみる
+
+      let str = `<p class="${k}">${v.text}</p>`;
+
+      // ここでデータをhtmlに埋め込む
+      if (admin != null) {
+        if (admin == "true") {
+          $("#output").prepend(str);
+        } else {
+          newPostRef.limitToLast(1)
+            // １回だけ処理する＿子要素が追加された時
+            .once("child_added", function (snapshot) {
+              // 受診データの呼び出す関数
+              push();
+            });
+        }
+
+      }
+
+    })
+
+    $("#text").on("keydown", function (e) {
+      console.log(e, 'eventの塊だよ〜！！')
+      console.log(e.key, 'key')
+      console.log(e.keyCode, 'keycode')
+
+      if(e.keyCode === 13){
+        // 上で記述した送信処理をコピペで持ってくる
+         // データを登録で送る
+        newPostRef.push({
+          // username: $("#username").val(), //名前
+          text: $("#text").val(), //テキストエリア
+        })
+        $("#text").val(""); //空にする
+        // 追加で記述
+        // $('#username').val("") //空にする
+      }
+    })
+
+  //プッシュ通知のオブジェクト 
+  function push(){
+  Push.create("更新情報",
+  {
+    body: "記事の更新をお知らせします!",
+    
+    timeout: 8000,
+    onClick: function () {
+    window.focus();
+    this.close();
+    }
+  })}
+
+  </script>
+</body>
+
+</html>
